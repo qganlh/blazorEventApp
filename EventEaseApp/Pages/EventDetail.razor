@@ -1,0 +1,51 @@
+@page "/events/{name}"
+@using EventEaseApp.Services
+@inject IEventService EventService
+@code {
+    [Parameter]
+    public string? Name { get; set; }
+
+    private EventItem? Event;
+
+    protected override void OnParametersSet()
+    {
+        if (!string.IsNullOrWhiteSpace(Name))
+        {
+            Event = EventService.GetByName(Uri.UnescapeDataString(Name));
+        }
+    }
+}
+
+@if (Event is null)
+{
+    <div class="container my-5">
+        <div class="alert alert-warning" role="alert">
+            Event not found.
+        </div>
+        <a class="btn btn-secondary" href="/events">Back to Events</a>
+    </div>
+}
+else
+{
+    <div class="container my-5">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <span>Event Details</span>
+                <a class="btn btn-sm btn-outline-secondary" href="/events">Back to Events</a>
+            </div>
+            <div class="card-body">
+                <h3 class="card-title mb-3">@Event.Name</h3>
+                <dl class="row mb-0">
+                    <dt class="col-sm-3">Date</dt>
+                    <dd class="col-sm-9">@Event.Date.ToString("MMM d, yyyy")</dd>
+
+                    <dt class="col-sm-3">Location</dt>
+                    <dd class="col-sm-9">@Event.Location</dd>
+
+                    <dt class="col-sm-3">Description</dt>
+                    <dd class="col-sm-9">@(!string.IsNullOrWhiteSpace(Event.Description) ? Event.Description : "—")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+}

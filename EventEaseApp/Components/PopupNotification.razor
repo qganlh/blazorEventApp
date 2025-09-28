@@ -1,0 +1,58 @@
+@using Microsoft.AspNetCore.Components
+
+@if (_visible)
+{
+    <div class="popup-overlay" @onclick="OnOverlayClick">
+        <div class="popup card shadow" @onclick:stopPropagation="true">
+            <button type="button" class="btn-close popup-close-icon" aria-label="Close" @onclick="Hide"></button>
+            <div class="card-body">
+                <h5 class="card-title mb-3">@Title</h5>
+                <p class="card-text">@Message</p>
+                <div class="d-flex justify-content-end gap-2 mt-3">
+                    <button class="btn btn-secondary" @onclick="Hide">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private bool _visible;
+
+    [Parameter]
+    public string? Title { get; set; } = "Notification";
+
+    [Parameter]
+    public string? Message { get; set; }
+
+    // Replace Show() method with a bindable property.
+    // Usage: <PopupNotification @bind-Show="isOpen" Message="..." />
+    [Parameter]
+    public bool Show
+    {
+        get => _visible;
+        set
+        {
+            if (_visible == value) return;
+            _visible = value;
+            StateHasChanged();
+        }
+    }
+
+    [Parameter]
+    public EventCallback<bool> ShowChanged { get; set; }
+
+    // Hides the popup and notifies parent for two-way binding
+    private async Task Hide()
+    {
+        if (!_visible) return;
+        _visible = false;
+        if (ShowChanged.HasDelegate)
+        {
+            await ShowChanged.InvokeAsync(false);
+        }
+        StateHasChanged();
+    }
+
+    private Task OnOverlayClick() => Hide();
+}

@@ -1,0 +1,43 @@
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Routing
+
+<div class="card">
+    <div class="card-body">
+        @if (!string.IsNullOrWhiteSpace(Href))
+        {
+            <h5 class="card-title mb-1">
+                <NavLink class="text-decoration-none" href="@Href">@EventName</NavLink>
+            </h5>
+        }
+        else
+        {
+            <h5 class="card-title mb-1">@EventName</h5>
+        }
+        <p class="card-text text-body-secondary mb-0 d-flex align-items-center">
+            <span class="me-2">@GetFormattedDate()</span>
+            <span class="mx-2">•</span>
+            <span>@Location</span>
+        </p>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string EventName { get; set; } = string.Empty;
+
+    [Parameter]
+    public DateTime Date { get; set; }
+
+    [Parameter]
+    public string Location { get; set; } = string.Empty;
+
+    // Optional parameters
+    [Parameter]
+    public string? DateFormat { get; set; } = "MMM d, yyyy";
+
+    [Parameter]
+    public string? Href { get; set; }
+
+    private string GetFormattedDate() =>
+        Date == default ? string.Empty : Date.ToString(DateFormat, System.Globalization.CultureInfo.CurrentCulture);
+}

@@ -1,0 +1,32 @@
+@page "/events"
+@using EventEaseApp.Components
+@using EventEaseApp.Services
+
+<div class="container my-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Upcoming Events</h2>
+        <a href="/events/new" class="btn btn-primary">Add Event</a>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-3">
+        @foreach (var e in Events)
+        {
+            <div class="col">
+                <EventCard EventName="@e.Name"
+                           Date="@e.Date"
+                           Location="@e.Location"
+                           Href="@($"/events/{Uri.EscapeDataString(e.Name)}")" />
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    [Inject] private IEventService EventService { get; set; } = default!;
+    private IReadOnlyList<EventItem> Events = Array.Empty<EventItem>();
+
+    protected override void OnInitialized()
+    {
+        Events = EventService.GetAll();
+    }
+}

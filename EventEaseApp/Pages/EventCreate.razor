@@ -1,0 +1,93 @@
+@page "/events/new"
+@using System.ComponentModel.DataAnnotations
+@using EventEaseApp.Services
+@using EventEaseApp.Model
+@using EventEaseApp.Components
+@inject NavigationManager Nav
+@inject IEventService EventService
+
+<div class="container my-4">
+    <h2 class="mb-3">Create Event</h2>
+
+    <EditForm Model="model" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary class="text-danger" />
+
+        <div class="card">
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label" for="name">Event Name</label>
+                    <InputText id="name" class="form-control" @bind-Value="model.Name" />
+                    <ValidationMessage For="() => model.Name" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="date">Date</label>
+                    <InputDate id="date" class="form-control" @bind-Value="model.Date" @bind-Value:format="yyyy-MM-dd" />
+                    <ValidationMessage For="() => model.Date" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="location">Location</label>
+                    <InputText id="location" class="form-control" @bind-Value="model.Location" />
+                    <ValidationMessage For="() => model.Location" class="text-danger" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label" for="description">Description</label>
+                    <InputTextArea id="description" class="form-control" @bind-Value="model.Description" rows="4" />
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <NavLink href="/events" class="btn btn-secondary">Cancel</NavLink>
+                </div>
+            </div>
+        </div>
+    </EditForm>
+</div>
+
+<PopupNotification Show="@isPopupOpen"
+                   ShowChanged="OnPopupShowChanged"
+                   Message="@popupMessage" />
+
+@code {
+    private EventFormModel model = new EventFormModel();
+
+    private bool isPopupOpen;
+    private string? popupMessage;
+    private bool wasSuccess;
+
+    private void HandleValidSubmit()
+    {
+        var item = new EventItem(
+            model.Name!.Trim(),
+            model.Date!.Value,
+            model.Location!.Trim(),
+            string.IsNullOrWhiteSpace(model.Description) ? null : model.Description.Trim());
+
+        if (EventService.Add(item))
+        {
+            wasSuccess = true;
+            popupMessage = "Event created successfully.";
+            isPopupOpen = true;
+        }
+        else
+        {
+            wasSuccess = false;
+            popupMessage = "Could not create event. It may already exist or input was invalid.";
+            isPopupOpen = true;
+        }
+    }
+
+    private Task OnPopupShowChanged(bool value)
+    {
+        isPopupOpen = value;
+        if (!value && wasSuccess)
+        {
+            // After closing success popup, go back to the events list
+            Nav.NavigateTo("/events");
+        }
+        return Task.CompletedTask;
+    }
+}

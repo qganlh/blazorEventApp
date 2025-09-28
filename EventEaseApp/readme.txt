@@ -1,6 +1,4 @@
-# This the the assignment project for Building Blazor Components with Copilot
-It was built with Copilot agent
-Copilot is a powerful companion for engineers building Blazor applications.
+﻿Microsoft Copilot is a powerful companion for engineers building Blazor applications.
 It accelerates development by offering intelligent code suggestions, generating Razor components, wiring up event handlers, and integrating backend services—all through natural language. 
 Whether an engineer is scaffolding a new app or refining an existing one, Copilot can help structure pages, manage state, and connect to APIs with minimal friction.
 
